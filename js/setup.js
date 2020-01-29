@@ -88,14 +88,71 @@ function pressEscape(evt) {
     }
 }
 
-setupOpen.addEventListener("keydown", function (evt) {
+ setupOpen.addEventListener("keydown", function (evt) {
     if(evt.keyCode === ENTER_KEYCODE){
         openPopup();
     }
 })
 
-document.querySelector(".setup-wizard-form").setAttribute("action", "https://js.dump.academy/code-andmagick");
-document.querySelector(".setup-wizard-form").setAttribute( "method", "POST");
-document.querySelector(".setup-user-name").setAttribute("minlength",2);
-document.querySelector(".setup-user-name").setAttribute("maxlength",25);
-document.querySelector(".setup-user-name").setAttribute("required","required");
+let setupUserName = setup.querySelector(".setup-user-name");
+let setupWizardForm = document.querySelector(".setup-wizard-form");
+
+setupWizardForm.setAttribute("action", "https://js.dump.academy/code-andmagick");
+setupWizardForm.setAttribute( "method", "POST");
+setupUserName.setAttribute("minlength",2);
+setupUserName.setAttribute("maxlength",25);
+setupUserName.setAttribute("required","required");
+
+// Realise Drug And Drop
+document.querySelector(".upload").addEventListener("mousedown", function(evt) {
+    evt.preventDefault();
+    let dragged = false;
+    let startCords = {
+        x : evt.clientX,
+        y : evt.clientY
+    }
+
+    function mouseMove(moveEvt){
+        dragged = true;
+        let shift = {
+            x: startCords.x - moveEvt.clientX,
+            y: startCords.y - moveEvt.clientY
+        }
+
+        startCords = {
+            x : moveEvt.clientX,
+            y : moveEvt.clientY
+        }
+        setup.style.top = (setup.offsetTop - shift.y) + "px";
+        setup.style.left = (setup.offsetLeft - shift.x) + "px";
+    }
+
+    function mouseUp(){
+        dragged = false;	document.removeEventListener("mousemove", mouseMove);
+        document.removeEventListener("mouseup", mouseUp);
+    }
+
+    if (dragged){
+        function onClickPreventDefault(evt) {
+            evt.preventDefault();
+            document.querySelector(".upload").removeEventListener("click", onClickPreventDefault);
+        }
+
+        document.querySelector(".upload").addEventListener("click", onClickPreventDefault);
+    }
+
+
+    document.addEventListener("mousemove", mouseMove);
+    document.addEventListener("mouseup", mouseUp)
+})
+
+// document.querySelector(".setup-user-name").addEventListener("invalid", function (evt) {
+//     if(document.querySelector(".setup-user-name").validity.tooShort){
+//         document.querySelector(".setup-user-name").setCustomValidity("поле слишком короткое");
+//         console.log("поле слишком короткое")
+//     }else if(document.querySelector(".setup-user-name").validity.tooLong){
+//         document.querySelector(".setup-user-name").setCustomValidity("поле слишком длинное");
+//         console.log("поле слишком длинное");
+//     }
+//
+// })
